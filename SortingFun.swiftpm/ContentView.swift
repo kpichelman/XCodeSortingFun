@@ -7,6 +7,8 @@ struct ContentView: View {
     var body: some View {
         VStack(alignment: .leading) {
             // Terminal window output
+            Text("Output:")
+                .font(.headline)
             TextEditor(text: $outputText)
                 .font(.system(.body, design: .monospaced))
                 .frame(height: 100)
@@ -14,6 +16,8 @@ struct ContentView: View {
                 .padding()
             
             // Input field
+            Text("Input:")
+                .font(.headline)
             TextEditor(text: $inputText)
                 .font(.system(.body, design: .monospaced))
                 .frame(height: 100)
@@ -49,18 +53,19 @@ struct ContentView: View {
     // Function to simulate different search types
     func performSearch(type: Int) {
         
-        var listToSort = inputText.components(separatedBy: "\n")
+        let listToSort = inputText.components(separatedBy: "\n")
         outputText.append("Sorting \(listToSort.count) words.")
         outputText.append("Performing Search Type \(type) with input:\n\(inputText)\n")
         let startTime = CFAbsoluteTimeGetCurrent()
         switch type {
         case 1:
-
-            var retList = BubbleSort(listToSort: listToSort)
+            let retList = BubbleSort(listToSort: listToSort)
             outputText.append("Sorted List: \n\(retList)\n")
             
         case 2:
-            outputText.append("Performing Search Type 2 with input: \(inputText)\n")
+            let retList = InsertionSort(listToSort: listToSort)
+            outputText.append("Sorted List: \n\(retList)\n")
+            
         case 3:
             outputText.append("Performing Search Type 3 with input: \(inputText)\n")
         default:
@@ -115,25 +120,38 @@ func BubbleSort(listToSort: [String]) -> [String] {
 }
 
 func InsertionSort(listToSort: [String]) -> [String] {
-    var sortingList = listToSort
-    var sortedList = [String](arrayLiteral: sortingList.remove(at: 0))
-    sortedList.remove(at: 0)
-    var varMiddleIndex = 1
-    
-    var index = varMiddleIndex // start in the middle
-    var checkingBigger = true
-    
-    while(sortingList.count > 0) {
-        let currentWord = sortedList.remove(at: 0)
-        let checkingBigger = isBigger(first: sortedList[index], second: currentWord)
-        if (checkingBigger) {
-            index += 1
-        } else {
-            index -= 1
-        }
-        
+    if (listToSort.count == 0) {
+        return listToSort
     }
-     return sortedList
+    
+    var sortingList = listToSort
+    let currentWord = sortingList.remove(at: 0)
+    var sortedList = [String]()
+    sortedList.append(currentWord)
+
+    while(sortingList.count > 0) {
+        let currentWord = sortingList.remove(at: 0)
+        let varMiddleIndex = Int(floor(Double(sortedList.count) / 2.0))
+        var index = varMiddleIndex
+        let checkingBigger = isBigger(first: currentWord, second: sortedList[index])
+        
+        while (index >= 0 && index <= sortedList.count) { // should not hit false, but just in case.
+            if (checkingBigger) {
+                index += 1
+                if (index >= sortedList.count || !isBigger(first: currentWord, second: sortedList[index])) {
+                    sortedList.insert(currentWord, at: (index))
+                    break
+                }
+            } else {
+                index -= 1
+                if (index < 0 || isBigger(first: currentWord, second: sortedList[index])) {
+                    sortedList.insert(currentWord, at: (index + 1))
+                    break
+                }
+            }
+        }
+    }
+    return sortedList
 }
 
 
