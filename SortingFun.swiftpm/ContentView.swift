@@ -27,23 +27,32 @@ struct ContentView: View {
                 .cornerRadius(5)
             
             // Buttons
+            VStack {
+                HStack {
+                    Button("Bubble") {
+                        performSearch(type: 1)
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
+                    
+                    Button("Insertion") {
+                        performSearch(type: 2)
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
+                    
+                    Button("Mergesort") {
+                        performSearch(type: 3)
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
+                }
+                .padding()
+            }
+            
             HStack {
-                Button("Bubble") {
-                    performSearch(type: 1)
-                }
-                .buttonStyle(PrimaryButtonStyle())
-                
-                Button("Insertion") {
-                    performSearch(type: 2)
-                }
-                .buttonStyle(PrimaryButtonStyle())
-                
-                Button("Mergesort") {
-                    performSearch(type: 3)
+                Button("Clear Output") {
+                    outputText = ""
                 }
                 .buttonStyle(PrimaryButtonStyle())
             }
-            .padding()
             
             Spacer()
         }
@@ -75,7 +84,6 @@ struct ContentView: View {
         let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
         
         outputText.append("Sorting took \(timeElapsed).")
-        
     }
 }
 
@@ -120,7 +128,7 @@ func BubbleSort(listToSort: [String]) -> [String] {
 }
 
 func InsertionSort(listToSort: [String]) -> [String] {
-    if (listToSort.count == 0) {
+    guard listToSort.count != 0 else {
         return listToSort
     }
     
