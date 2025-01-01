@@ -76,7 +76,9 @@ struct ContentView: View {
             outputText.append("Sorted List: \n\(retList)\n")
             
         case 3:
-            outputText.append("Performing Search Type 3 with input: \(inputText)\n")
+            let retList = MergeSort(listToSort: listToSort)
+            outputText.append("Sorted List: \n\(retList)\n")
+            
         default:
             break
         }
@@ -162,6 +164,48 @@ func InsertionSort(listToSort: [String]) -> [String] {
     return sortedList
 }
 
+func MergeSort(listToSort: [String]) -> [String] {
+    // break down the string array into arrays of 1 element
+    var megaStringArrayArray = listToSort.map { [$0] }
+    
+    while (megaStringArrayArray.count > 1) {
+        var index = 0
+        while (index + 1 < megaStringArrayArray.count) {
+            megaStringArrayArray[index] = mergeArrays(arrayOne: megaStringArrayArray[index], arrayTwo: megaStringArrayArray[index + 1])
+            megaStringArrayArray.remove(at: index + 1)
+            index += 1
+        }
+    }
+    
+    return megaStringArrayArray[0]
+}
+
+func mergeArrays(arrayOne: [String], arrayTwo: [String]) -> [String] {
+    var mergedArray = [String]()
+    // avoiding the creating of a duplicate array by crearting index values
+    var arrayOneIndex = 0
+    var arrayTwoIndex = 0
+    
+    while (arrayOneIndex < arrayOne.count || arrayTwoIndex < arrayTwo.count) {
+        if (arrayOneIndex >= arrayOne.count) {
+            mergedArray.append(arrayTwo[arrayTwoIndex])
+            arrayTwoIndex += 1
+        } else if (arrayTwoIndex >= arrayTwo.count) {
+            mergedArray.append(arrayOne[arrayOneIndex])
+            arrayOneIndex += 1
+        } else {
+            if (isBigger(first: arrayOne[arrayOneIndex], second: arrayTwo[arrayTwoIndex])) {
+                mergedArray.append(arrayTwo[arrayTwoIndex])
+                arrayTwoIndex += 1
+            } else {
+                mergedArray.append(arrayOne[arrayOneIndex])
+                arrayOneIndex += 1
+            }
+        }
+    }
+    
+    return mergedArray
+}
 
 func isBigger(first: String, second: String) -> Bool {
         return (first > second)
