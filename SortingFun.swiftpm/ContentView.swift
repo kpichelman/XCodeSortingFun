@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var inputText: String = "one\ntwo\nthree\nfour"
+    @State private var inputText: String = "one\ntwo\nthree\nfour\nfive\nsix\nseven\neight\nnine\nten\neleven\ntwelve\nthirteen\nfourteen\nfifteen\nsixteen\nseventeen\neighteen\nnineteen\ntwenty\ntwenty-one\ntwenty-two\ntwenty-three\ntwenty-four\ntwenty-five\ntwenty-six\ntwenty-seven\ntwenty-eight\ntwenty-nine\nthirty\nthirty-one\nthirty-two\nthirty-three\nthirty-four\nthirty-five\nthirty-six\nthirty-seven\nthirty-eight\nthirty-nine\nforty\nforty-one\nforty-two\nforty-three\nforty-four\nforty-five\nforty-six\nforty-seven\nforty-eight\nforty-nine\nfifty\nfifty-one\nfifty-two\nfifty-three\nfifty-four\nfifty-five\nfifty-six\nfifty-seven\nfifty-eight\nfifty-nine\nsixty\nsixty-one\nsixty-two\nsixty-three\nsixty-four\nsixty-five\nsixty-six\nsixty-seven\nsixty-eight\nsixty-nine\nseventy\nseventy-one\nseventy-two\nseventy-three\nseventy-four\nseventy-five\nseventy-six\nseventy-seven\nseventy-eight\nseventy-nine\neighty\neighty-one\neighty-two\neighty-three\neighty-four\neighty-five\neighty-six\neighty-seven\neighty-eight\neighty-nine\nninety\nninety-one\nninety-two\nninety-three\nninety-four\nninety-five\nninety-six\nninety-seven\nninety-eight\nninety-nine\none hundred"
     @State private var outputText: String = ""
     
     var body: some View {
@@ -30,17 +30,17 @@ struct ContentView: View {
             VStack {
                 HStack {
                     Button("Bubble") {
-                        performSearch(type: 1)
+                        performSearch(type: .Bubble)
                     }
                     .buttonStyle(PrimaryButtonStyle())
                     
                     Button("Insertion") {
-                        performSearch(type: 2)
+                        performSearch(type: .Insertion)
                     }
                     .buttonStyle(PrimaryButtonStyle())
                     
                     Button("Mergesort") {
-                        performSearch(type: 3)
+                        performSearch(type: .MergeSort)
                     }
                     .buttonStyle(PrimaryButtonStyle())
                 }
@@ -60,22 +60,30 @@ struct ContentView: View {
     }
     
     // Function to simulate different search types
-    func performSearch(type: Int) {
+    func performSearch(type: SortTypes) {
+        let rawListToSort = inputText.components(separatedBy: "\n")
         
-        let listToSort = inputText.components(separatedBy: "\n")
-        outputText.append("Sorting \(listToSort.count) words.")
-        outputText.append("Performing Search Type \(type) with input:\n\(inputText)\n")
+        outputText.append("Performing Sorting Type \(type) on \(rawListToSort.count) words.\n")
+        
+        // limit to 10000 entries
+        if (rawListToSort.count > 10000) {
+            outputText.append("\nSort limited to 10,000 words. \(rawListToSort.count) detected.  Remove entires \(rawListToSort.count - 10000) from the list.")
+            
+        }
+        // Clean up any words if needed and let the user know.
+        let listToSort = choppedStrings(rawStrings: rawListToSort)
+        
         let startTime = CFAbsoluteTimeGetCurrent()
         switch type {
-        case 1:
+        case .Bubble:
             let retList = BubbleSort(listToSort: listToSort)
             outputText.append("Sorted List: \n\(retList)\n")
             
-        case 2:
+        case .Insertion:
             let retList = InsertionSort(listToSort: listToSort)
             outputText.append("Sorted List: \n\(retList)\n")
             
-        case 3:
+        case .MergeSort:
             let retList = MergeSort(listToSort: listToSort)
             outputText.append("Sorted List: \n\(retList)\n")
             
@@ -105,6 +113,24 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
+}
+
+enum SortTypes {
+    case Bubble
+    case Insertion
+    case MergeSort
+}
+
+func choppedStrings(rawStrings: [String]) -> [String] {
+    var croppedStrings: [String] = []
+    for string in rawStrings {
+        if string.count > 50 {
+            croppedStrings.append(String(string.prefix(50)) + "...")
+        } else {
+            croppedStrings.append(string)
+        }
+    }
+    return croppedStrings
 }
 
 func BubbleSort(listToSort: [String]) -> [String] {
