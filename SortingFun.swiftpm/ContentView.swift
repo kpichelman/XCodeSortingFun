@@ -3,6 +3,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var inputText: String = "one\ntwo\nthree\nfour\nfive\nsix\nseven\neight\nnine\nten\neleven\ntwelve\nthirteen\nfourteen\nfifteen\nsixteen\nseventeen\neighteen\nnineteen\ntwenty\ntwenty-one\ntwenty-two\ntwenty-three\ntwenty-four\ntwenty-five\ntwenty-six\ntwenty-seven\ntwenty-eight\ntwenty-nine\nthirty\nthirty-one\nthirty-two\nthirty-three\nthirty-four\nthirty-five\nthirty-six\nthirty-seven\nthirty-eight\nthirty-nine\nforty\nforty-one\nforty-two\nforty-three\nforty-four\nforty-five\nforty-six\nforty-seven\nforty-eight\nforty-nine\nfifty\nfifty-one\nfifty-two\nfifty-three\nfifty-four\nfifty-five\nfifty-six\nfifty-seven\nfifty-eight\nfifty-nine\nsixty\nsixty-one\nsixty-two\nsixty-three\nsixty-four\nsixty-five\nsixty-six\nsixty-seven\nsixty-eight\nsixty-nine\nseventy\nseventy-one\nseventy-two\nseventy-three\nseventy-four\nseventy-five\nseventy-six\nseventy-seven\nseventy-eight\nseventy-nine\neighty\neighty-one\neighty-two\neighty-three\neighty-four\neighty-five\neighty-six\neighty-seven\neighty-eight\neighty-nine\nninety\nninety-one\nninety-two\nninety-three\nninety-four\nninety-five\nninety-six\nninety-seven\nninety-eight\nninety-nine\none hundred"
     @State private var outputText: String = ""
+    @State private var isToggled: Bool = false
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -45,13 +46,17 @@ struct ContentView: View {
                     .buttonStyle(PrimaryButtonStyle())
                 }
                 .padding()
-            }
-            
-            HStack {
-                Button("Clear Output") {
-                    outputText = ""
+                
+                
+                VStack {
+                    Toggle(isOn: $isToggled) {
+                                    Text("Run 100x:")
+                                }
+                    Button("Clear Output") {
+                        outputText = ""
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
                 }
-                .buttonStyle(PrimaryButtonStyle())
             }
             
             Spacer()
@@ -73,27 +78,59 @@ struct ContentView: View {
         // Clean up any words if needed and let the user know.
         let listToSort = choppedStrings(rawStrings: rawListToSort)
         
-        let startTime = CFAbsoluteTimeGetCurrent()
-        switch type {
-        case .Bubble:
-            let retList = BubbleSort(listToSort: listToSort)
-            outputText.append("Sorted List: \n\(retList)\n")
+        if (isToggled) {
+            var lowestTime = -1.0
+            var fastestTime = -1.0
+            var averageTime = -1.0
             
-        case .Insertion:
-            let retList = InsertionSort(listToSort: listToSort)
-            outputText.append("Sorted List: \n\(retList)\n")
+            for index in 0..<100 {
+                
+                let startTime = CFAbsoluteTimeGetCurrent()
+                switch type {
+                case .Bubble:
+                    let retList = BubbleSort(listToSort: listToSort)
+                    
+                case .Insertion:
+                    let retList = InsertionSort(listToSort: listToSort)
+                    
+                case .MergeSort:
+                    let retList = MergeSort(listToSort: listToSort)
+                }
+                let runtime = CFAbsoluteTimeGetCurrent() - startTime
+                if (lowestTime < 0 || runtime < lowestTime) {
+                    lowestTime = runtime
+                }
+                if (fastestTime < 0 || runtime > fastestTime) {
+                    fastestTime = runtime
+                }
+                
+                if (averageTime < 0) {
+                    averageTime = runtime
+                } else {
+                    averageTime = ((averageTime * Double(index) + runtime) / (Double(index) + 1.0))
+                }
+            }
+            outputText.append("Slowest Time: \(lowestTime)\n")
+            outputText.append("Fastest Time: \(fastestTime)\n")
+            outputText.append("Average Time: \(averageTime)\n")
+        } else {
+            let startTime = CFAbsoluteTimeGetCurrent()
+            var retList = [String]()
             
-        case .MergeSort:
-            let retList = MergeSort(listToSort: listToSort)
+            switch type {
+            case .Bubble:
+                let retList = BubbleSort(listToSort: listToSort)
+                
+            case .Insertion:
+                let retList = InsertionSort(listToSort: listToSort)
+                
+            case .MergeSort:
+                let retList = MergeSort(listToSort: listToSort)
+            }
+
             outputText.append("Sorted List: \n\(retList)\n")
-            
-        default:
-            break
+            outputText.append("Sorting took \(CFAbsoluteTimeGetCurrent() - startTime).")
         }
-        
-        let timeElapsed = CFAbsoluteTimeGetCurrent() - startTime
-        
-        outputText.append("Sorting took \(timeElapsed).")
     }
 }
 
