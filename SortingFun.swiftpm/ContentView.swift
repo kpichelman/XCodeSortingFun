@@ -234,7 +234,7 @@ func MergeSort(listToSort: [String]) -> [String] {
     while (megaStringArrayArray.count > 1) {
         var index = 0
         while (index + 1 < megaStringArrayArray.count) {
-            megaStringArrayArray[index] = mergeArrays(arrayOne: megaStringArrayArray[index], arrayTwo: megaStringArrayArray[index + 1])
+            megaStringArrayArray[index] = mergeArrayMethodTwo(arrayOne: megaStringArrayArray[index], arrayTwo: megaStringArrayArray[index + 1])
             megaStringArrayArray.remove(at: index + 1)
             index += 1
         }
@@ -267,6 +267,24 @@ func mergeArrays(arrayOne: [String], arrayTwo: [String]) -> [String] {
         }
     }
     
+    return mergedArray
+}
+
+// this is shaving .0001 off of 100 word sort on iphone 15 sim.
+func mergeArrayMethodTwo(arrayOne: [String], arrayTwo: [String]) -> [String] {
+    var mergedArray = arrayOne
+    var arrayOneIndex = 0
+    var arrayTwoIndex = 0
+
+    while ((arrayOneIndex < arrayOne.count) && (arrayTwoIndex < arrayTwo.count)) {
+        if arrayOne[arrayOneIndex] < arrayTwo[arrayTwoIndex] {
+            arrayOneIndex += 1
+        } else {
+            mergedArray.insert(arrayTwo[arrayTwoIndex], at: arrayOneIndex)
+            arrayOneIndex += 1
+            arrayTwoIndex += 1
+        }
+    }
     return mergedArray
 }
 
