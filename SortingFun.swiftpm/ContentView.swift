@@ -44,13 +44,18 @@ struct ContentView: View {
                         performSearch(type: .MergeSort)
                     }
                     .buttonStyle(PrimaryButtonStyle())
+                    
+                    Button("Mergesort\nRecursive") {
+                        performSearch(type: .MergeSort)
+                    }
+                    .buttonStyle(PrimaryButtonStyle())
                 }
                 .padding()
                 
                 
                 VStack {
                     Toggle(isOn: $isToggled) {
-                                    Text("Run 100x:")
+                                    Text("Run 1000x:")
                                 }
                     Button("Clear Output") {
                         outputText = ""
@@ -83,18 +88,21 @@ struct ContentView: View {
             var fastestTime = -1.0
             var averageTime = -1.0
             
-            for index in 0..<100 {
+            for index in 0..<1000 {
                 
                 let startTime = CFAbsoluteTimeGetCurrent()
                 switch type {
                 case .Bubble:
-                    let retList = BubbleSort(listToSort: listToSort)
+                    BubbleSort(listToSort: listToSort)
                     
                 case .Insertion:
-                    let retList = InsertionSort(listToSort: listToSort)
+                    InsertionSort(listToSort: listToSort)
                     
                 case .MergeSort:
-                    let retList = MergeSort(listToSort: listToSort)
+                    MergeSort(listToSort: listToSort)
+                    
+                case .MergeSortRecursive:
+                    MergeSortRecursive(listToSort: listToSort)
                 }
                 let runtime = CFAbsoluteTimeGetCurrent() - startTime
                 if (lowestTime < 0 || runtime < lowestTime) {
@@ -119,14 +127,18 @@ struct ContentView: View {
             
             switch type {
             case .Bubble:
-                let retList = BubbleSort(listToSort: listToSort)
+                retList = BubbleSort(listToSort: listToSort)
                 
             case .Insertion:
-                let retList = InsertionSort(listToSort: listToSort)
+                retList = InsertionSort(listToSort: listToSort)
                 
             case .MergeSort:
-                let retList = MergeSort(listToSort: listToSort)
+                retList = MergeSort(listToSort: listToSort)
+                
+            case .MergeSortRecursive:
+                retList = MergeSortRecursive(listToSort: listToSort)
             }
+            
 
             outputText.append("Sorted List: \n\(retList)\n")
             outputText.append("Sorting took \(CFAbsoluteTimeGetCurrent() - startTime).")
@@ -143,6 +155,7 @@ struct PrimaryButtonStyle: ButtonStyle {
             .foregroundColor(.white)
             .cornerRadius(8)
             .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .font(.system(size: 10))
     }
 }
 
@@ -156,6 +169,7 @@ enum SortTypes {
     case Bubble
     case Insertion
     case MergeSort
+    case MergeSortRecursive
 }
 
 func choppedStrings(rawStrings: [String]) -> [String] {
@@ -241,6 +255,21 @@ func MergeSort(listToSort: [String]) -> [String] {
     }
     
     return megaStringArrayArray[0]
+}
+
+func MergeSortRecursive(listToSort: [String]) -> [String] {
+    if (listToSort.count <= 1) {
+        return listToSort
+    }
+    
+    let middleIndex = listToSort.count / 2
+    let arrayOne = Array(listToSort[0..<middleIndex])
+    let arrayTwo = Array(listToSort[middleIndex..<listToSort.count])
+    
+    let sortedArrayOne = MergeSortRecursive(listToSort: arrayOne)
+    let sortedArrayTwo = MergeSortRecursive(listToSort: arrayTwo)
+    
+    return mergeArrayMethodTwo(arrayOne: sortedArrayOne, arrayTwo: sortedArrayTwo)
 }
 
 func mergeArrays(arrayOne: [String], arrayTwo: [String]) -> [String] {
